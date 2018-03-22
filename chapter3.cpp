@@ -24,6 +24,12 @@ bool list_contains(int value_to_find){
     std::lock_guard<std::mutex> guard(some_mutex);
     return std::find(some_list.begin(), some_list.end(), value_to_find) != some_list.end();
 }
+//a mutex protected data structure cannot make sure it is safe, for example:
+//in a stack interface we have method top() to get the top element of the stack and a 
+//empty() method to check if the stack contains some elements; of course we can use mutex to make sure that we get the right result at the time we invoke the method;
+//but after we checked the the stack is not empty, and before we invoke top() another thread may consume all the elements, them we got a error.
+//so protect the content is not enough, we should design a proper interface.
+
 int main () {
     std::vector<std::thread> threads(10);
     for(decltype(threads.size()) i = 0; i < threads.size(); ++i){
