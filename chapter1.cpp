@@ -13,6 +13,7 @@ class FunObj{
 int main (){
     std::thread t1(fun, "yinly");
     std::thread t2(FunObj{},"yinly");
+    std::cout << "id of t1 " << t1.get_id() << std::endl;
     t1.join();
     t2.join();
     return 0;
