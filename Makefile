@@ -1,6 +1,7 @@
 cxx = g++-7
 cflag =  -std=c++14 -g -Wall -pthread
-target = chapter1 chapter3 chapter3_thread_safe_stack chapter2 chapter3_lock_mult_mutexes chapter3_unique_lock chapter4_cvqueue
+target = chapter1 chapter3 chapter3_thread_safe_stack chapter2 chapter3_lock_mult_mutexes chapter3_unique_lock chapter4_cvqueue\
+chapter4_future_promise chapter4_wrap_future chapter4_time
 all:${target}
 #chapter1:chapter1.cpp
 #	${cxx} -o $@ ${cflag} $<
