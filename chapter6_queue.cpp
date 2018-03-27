@@ -3,6 +3,8 @@
 #include <iostream>
 #include <condition_variable>
 #include <mutex>
+#include <atomic>
+#include <chrono>
 #include <thread>
 #include <random>
 template<typename T,
@@ -55,26 +57,32 @@ public:
     }
 
 };
-void produce(threadsafe_queue<int>& q){
-    while(true){
-        for(int i = 0; i < 100; i++){
-            q.push(i);
-        }
+std::atomic<bool> stop(true);
+std::atomic<bool> finish(false);
+void produce(threadsafe_queue<int>& q, int n){
+    while(stop.load());
+    for(int i = 0; i < n; i++){
+        q.push(i);
     }
+    finish.store(true);
 }
 void consume(threadsafe_queue<int>& q){
+    while(stop.load());
     while(true){
         int value;
         q.pop(value);
         std::cout << "pop: " << value << std::endl;
+        if(finish.load()&&q.empty()) break;
     }
 }
 int main(){
     threadsafe_queue<int> q;
-    std::thread t1(produce, std::ref(q));
+    std::thread t1(produce, std::ref(q), 10000);
     std::thread t2(consume, std::ref(q));
-    std::thread t3(consume, std::ref(q));
+    auto now = std::chrono::steady_clock::now();
+    stop = false;
     t1.join();
     t2.join();
-    t3.join();
+    auto duration = std::chrono::steady_clock::now() - now;
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << std::endl;
 }
